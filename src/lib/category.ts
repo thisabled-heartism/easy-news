@@ -7,6 +7,7 @@ type CatStyle = {
 };
 
 const STYLES: Record<string, CatStyle> = {
+  "발달장애": { bg: "bg-violet-100", text: "text-violet-700", emoji: "💜", gradFrom: "from-violet-100", gradTo: "to-fuchsia-50" },
   "사회":   { bg: "bg-purple-100", text: "text-purple-700", emoji: "🏛️", gradFrom: "from-purple-100", gradTo: "to-purple-50" },
   "정치":   { bg: "bg-blue-100",   text: "text-blue-700",   emoji: "🗳️", gradFrom: "from-blue-100",   gradTo: "to-blue-50" },
   "경제":   { bg: "bg-emerald-100",text: "text-emerald-700",emoji: "💰", gradFrom: "from-emerald-100",gradTo: "to-emerald-50" },
@@ -24,4 +25,5 @@ export function catStyle(category: string | null): CatStyle {
   return STYLES[category] ?? DEFAULT;
 }
 
-export const CATEGORIES = ["사회", "정치", "경제", "문화", "날씨"];
+// 발달장애를 맨 앞에 두어서 헤더 네비에서 잘 보이게
+export const CATEGORIES = ["발달장애", "사회", "정치", "경제", "문화", "날씨"];

@@ -1,6 +1,7 @@
 import Parser from "rss-parser";
 import { prisma } from "./db";
 import { NEWS_SOURCES, type NewsSource } from "./sources";
+import { isDisabilityArticle } from "./disability-detect";
 
 const parser = new Parser({
   timeout: 15000,
@@ -33,6 +34,8 @@ async function crawlSource(source: NewsSource) {
     const publishedAt = item.isoDate ? new Date(item.isoDate) : new Date();
 
     const cleanTitle = stripHtml(item.title);
+    // 발달장애 관련 기사면 카테고리 덮어쓰기 (우선)
+    const finalCategory = isDisabilityArticle(cleanTitle) ? "발달장애" : source.category;
 
     try {
       await prisma.article.create({
@@ -41,7 +44,7 @@ async function crawlSource(source: NewsSource) {
           sourceUrl: item.link,
           originalTitle: cleanTitle,
           originalBody: body,
-          category: source.category,
+          category: finalCategory,
           publishedAt,
           status: "pending"
         }
