@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하티즘 뉴스 - 마음으로 읽는 쉬운 소식</title>
+<meta name="theme-color" content="#7c3aed">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path d='M15 26 L4 14 C0 10 2 4 7 4 C10 4 12 6 15 9 C18 6 20 4 23 4 C28 4 30 10 26 14 Z' fill='%237c3aed'/><circle cx='22' cy='9' r='3' fill='%23fbbf24'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  }
+  .border-3 { border-width: 3px; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
+  button:active { transform: scale(0.97); }
+  button { transition: all 0.15s ease; }
+  /* 본문 가독성 - 발달장애인 접근성 */
+  .easy-body p { font-size: 1.4rem; line-height: 2; margin-bottom: 1.5em; letter-spacing: -0.01em; }
+</style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-purple-50/30 min-h-screen">
+
+<!-- 데모 배너 -->
+<div class="bg-yellow-300 text-yellow-900 text-center py-2.5 text-sm font-bold">
+  🎨 데모 화면 — 실제 뉴스가 아닌 예시 데이터입니다
+</div>
+
+<!-- 헤더 -->
+<header class="bg-white border-b-3 border-gray-100 sticky top-0 z-30">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#" onclick="showList(); return false;" class="flex items-center gap-2.5 group">
+      <svg viewBox="0 0 30 30" class="w-9 h-9">
+        <path d="M15 26 L4 14 C0 10 2 4 7 4 C10 4 12 6 15 9 C18 6 20 4 23 4 C28 4 30 10 26 14 Z" fill="#7c3aed"/>
+        <circle cx="22" cy="9" r="3" fill="#fbbf24"/>
+      </svg>
+      <div class="leading-tight">
+        <div class="font-black text-2xl tracking-tight text-gray-900">하티즘 뉴스</div>
+        <div class="text-xs font-medium text-purple-600">마음으로 읽는 쉬운 소식</div>
+      </div>
+    </a>
+    <nav class="hidden md:flex items-center gap-1">
+      <button onclick="filterCat(null)" class="px-3 py-2 rounded-lg text-sm font-bold text-gray-700 hover:text-purple-700 hover:bg-purple-50">전체</button>
+      <button onclick="filterCat('사회')" class="px-3 py-2 rounded-lg text-sm font-bold text-gray-700 hover:text-purple-700 hover:bg-purple-50">사회</button>
+      <button onclick="filterCat('정치')" class="px-3 py-2 rounded-lg text-sm font-bold text-gray-700 hover:text-purple-700 hover:bg-purple-50">정치</button>
+      <button onclick="filterCat('문화')" class="px-3 py-2 rounded-lg text-sm font-bold text-gray-700 hover:text-purple-700 hover:bg-purple-50">문화</button>
+      <button onclick="filterCat('날씨')" class="px-3 py-2 rounded-lg text-sm font-bold text-gray-700 hover:text-purple-700 hover:bg-purple-50">날씨</button>
+    </nav>
+  </div>
+</header>
+
+<main id="app" class="max-w-5xl mx-auto px-6 py-10"></main>
+
+<!-- 푸터 -->
+<footer class="border-t-3 border-gray-100 bg-white mt-16">
+  <div class="max-w-5xl mx-auto px-6 py-10">
+    <div class="flex items-center gap-2 mb-4">
+      <svg viewBox="0 0 30 30" class="w-6 h-6">
+        <path d="M15 26 L4 14 C0 10 2 4 7 4 C10 4 12 6 15 9 C18 6 20 4 23 4 C28 4 30 10 26 14 Z" fill="#7c3aed"/>
+        <circle cx="22" cy="9" r="3" fill="#fbbf24"/>
+      </svg>
+      <span class="font-black text-lg tracking-tight">하티즘 뉴스</span>
+    </div>
+    <p class="text-sm text-gray-600 leading-relaxed mb-2">
+      하티즘 뉴스는 발달장애인도 이해할 수 있는 쉬운말로 뉴스를 전하는 서비스입니다.
+    </p>
+    <p class="text-sm text-gray-500">모든 뉴스는 원문 출처와 함께 표시됩니다.</p>
+    <p class="text-xs text-gray-400 mt-6">© Heartism News</p>
+  </div>
+</footer>
+
+<script>
+// ✨ = Claude AI가 실제로 변환한 기사
+// 📰 = 실제 연합뉴스 RSS에서 가져온 진짜 기사
+const ARTICLES = [
+  {
+    id: "1",
+    category: "사회",
+    emoji: "💼",
+    aiGenerated: true,
+    realNews: false,
+    easyTitle: "나라가 발달장애인 일자리에 200억 원을 써요",
+    easyBody: [
+      "정부가 5일에 발표했어요.\n발달장애인이 일할 수 있도록 200억 원을 더 쓰기로 했대요.",
+      "이 돈으로 뭘 할까요?\n발달장애인이 일하는 방법을 배우는 시설(직업재활시설)을 늘려요.\n일하는 기술(직업훈련)을 배우는 프로그램도 늘린다고 했어요.",
+      "보건복지부 장관이 말했어요.\n\"이건 발달장애인이 스스로 돈을 버는 첫 걸음이에요.\"",
+      "전국 17개 지역에서 일하는 시설 30곳이 새로 만들어져요.\n발달장애인이 더 많이 일할 수 있게 되는 거예요."
+    ].join("\n\n"),
+    source: "연합뉴스 (예시 기사)",
+    sourceUrl: "https://www.yna.co.kr/",
+    publishedAt: "2026-05-07"
+  },
+  {
+    id: "2",
+    category: "사회",
+    emoji: "🚗",
+    aiGenerated: true,
+    realNews: true,
+    easyTitle: "강원 경찰이 매달 첫 수요일에 안전 캠페인을 합니다",
+    easyBody: [
+      "강원 경찰청은 7일에 '걷기 안전 약속의 날' 캠페인을 한다고 말했습니다.\n매달 첫 번째 수요일 아침과 저녁 시간에 큰 길에서 운전자들에게 횡단보도(건널목) 앞에서 멈추도록 안내합니다.",
+      "경찰은 또한 보행자(걷는 사람)들에게 무단횡단(표지판 없이 건너기)을 하지 말도록 당부합니다."
+    ].join("\n\n"),
+    source: "연합뉴스",
+    sourceUrl: "https://www.yna.co.kr/view/AKR20260507167500062",
+    publishedAt: "2026-05-07"
+  },
+  {
+    id: "3",
+    category: "날씨",
+    emoji: "☀️",
+    aiGenerated: true,
+    realNews: true,
+    easyTitle: "금요일 새벽까지 비가 오고 주말은 맑습니다",
+    easyBody: [
+      "금요일 8일 새벽까지 비가 옵니다.\n그 다음부터는 날씨가 좋아집니다.\n기상청(날씨를 알려주는 곳)은 7일 밤부터 8일 새벽 사이에 5~20mm의 비가 내린다고 했습니다.",
+      "토요일과 일요일은 맑은 날씨가 계속됩니다.\n낮 가장 따뜻한 온도는 22~25도가 될 것입니다."
+    ].join("\n\n"),
+    source: "연합뉴스",
+    sourceUrl: "https://www.yna.co.kr/view/AKR20260507161100530",
+    publishedAt: "2026-05-07"
+  },
+  {
+    id: "4",
+    category: "정치",
+    emoji: "📜",
+    aiGenerated: true,
+    realNews: true,
+    easyTitle: "인천 서구가 7월부터 '서해구'로 이름을 바꿉니다",
+    easyBody: [
+      "정부는 7일에 인천시 서구의 이름을 '서해구'로 바꾸는 법안(규칙)이 국회에서 통과했다고 말했습니다.\n새 이름은 7월 1일부터 사용됩니다.",
+      "인천 서구 주민들이 5년 동안 열심히 노력한 결과입니다."
+    ].join("\n\n"),
+    source: "연합뉴스",
+    sourceUrl: "https://www.yna.co.kr/view/AKR20260507123500530",
+    publishedAt: "2026-05-07"
+  },
+  {
+    id: "5",
+    category: "사회",
+    emoji: "📚",
+    aiGenerated: false,
+    realNews: false,
+    easyTitle: "시청 옆에 새 도서관이 문을 엽니다",
+    easyBody: [
+      "서울시청 옆에 새 도서관이 생겼어요.\n이름은 '함께 도서관'입니다.\n2026년 5월 10일에 문을 엽니다.",
+      "도서관에는 책이 5만 권 있어요.\n누구나 무료로 책을 빌릴 수 있어요.\n빌린 책은 2주 동안 볼 수 있어요.",
+      "도서관은 아침 9시에 문을 엽니다.\n저녁 8시에 문을 닫아요.\n일요일에는 쉽니다."
+    ].join("\n\n"),
+    source: "예시 데이터",
+    sourceUrl: "#",
+    publishedAt: "2026-05-06"
+  },
+  {
+    id: "6",
+    category: "문화",
+    emoji: "🎬",
+    aiGenerated: false,
+    realNews: false,
+    easyTitle: "주말에 무료 영화를 봅니다",
+    easyBody: [
+      "이번 주말에 한강에서 영화를 봅니다.\n공원에 큰 화면이 있어요.",
+      "토요일 저녁 7시에 시작합니다.\n돈을 안 내도 됩니다.\n누구나 올 수 있어요.",
+      "영화 이름은 '우리집 강아지'입니다.\n어린이도 좋아하는 영화예요."
+    ].join("\n\n"),
+    source: "예시 데이터",
+    sourceUrl: "#",
+    publishedAt: "2026-05-06"
+  },
+  {
+    id: "7",
+    category: "사회",
+    emoji: "🚇",
+    aiGenerated: false,
+    realNews: false,
+    easyTitle: "지하철 9호선에 새 역이 생깁니다",
+    easyBody: [
+      "서울 지하철 9호선이 길어집니다.\n새 역이 3개 더 생겨요.",
+      "새 역의 이름은 이렇습니다.\n강일역, 미사역, 풍산역입니다.",
+      "2026년 12월부터 탈 수 있어요.\n강동구에 사는 사람들이 편해질 것 같아요."
+    ].join("\n\n"),
+    source: "예시 데이터",
+    sourceUrl: "#",
+    publishedAt: "2026-05-05"
+  }
+];
+
+const DAYS = ["일","월","화","수","목","금","토"];
+function formatDate(s) {
+  const d = new Date(s);
+  return `${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})`;
+}
+function formatLongDate(s) {
+  const d = new Date(s);
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 ${DAYS[d.getDay()]}요일`;
+}
+
+const CATEGORY_COLOR = {
+  "사회":   { bg: "bg-purple-100", text: "text-purple-700", solid: "bg-purple-600" },
+  "정치":   { bg: "bg-blue-100",   text: "text-blue-700",   solid: "bg-blue-600" },
+  "문화":   { bg: "bg-pink-100",   text: "text-pink-700",   solid: "bg-pink-600" },
+  "날씨":   { bg: "bg-amber-100",  text: "text-amber-700",  solid: "bg-amber-500" },
+  "default":{ bg: "bg-gray-100",   text: "text-gray-700",   solid: "bg-gray-600" }
+};
+function catColor(c) { return CATEGORY_COLOR[c] || CATEGORY_COLOR.default; }
+
+const app = document.getElementById("app");
+let currentFilter = null;
+
+function filterCat(cat) {
+  currentFilter = cat;
+  showList();
+}
+
+function showList() {
+  window.scrollTo(0, 0);
+  const items = currentFilter ? ARTICLES.filter(a => a.category === currentFilter) : ARTICLES;
+  const featured = items[0];
+  const rest = items.slice(1);
+
+  app.innerHTML = `
+    <div class="animate-fadeIn">
+      <!-- 히어로 -->
+      <div class="mb-10">
+        <h1 class="text-4xl font-black tracking-tight text-gray-900 leading-tight mb-2">
+          오늘의 쉬운 뉴스
+        </h1>
+        <p class="text-base text-gray-600">${currentFilter ? `'${currentFilter}' 카테고리` : "어려운 뉴스를 쉬운말로 풀어 드려요"}</p>
+      </div>
+
+      ${featured ? `
+        <!-- 메인 뉴스 -->
+        <button onclick="showDetail('${featured.id}')" class="block w-full text-left mb-8 bg-white border-3 border-gray-100 hover:border-purple-300 rounded-3xl p-8 group transition">
+          <div class="flex items-start gap-6">
+            <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center text-5xl flex-shrink-0">
+              ${featured.emoji}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-3 flex-wrap">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black ${catColor(featured.category).bg} ${catColor(featured.category).text}">
+                  #${featured.category}
+                </span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-yellow-300 text-yellow-900">
+                  ⭐ 오늘의 뉴스
+                </span>
+                ${featured.aiGenerated ? `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-purple-100 text-purple-700">✨ Claude AI 변환</span>` : ""}
+                ${featured.realNews ? `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-green-100 text-green-700">📰 실제 기사</span>` : ""}
+              </div>
+              <h2 class="text-2xl md:text-3xl font-black tracking-tight text-gray-900 leading-snug mb-3 group-hover:text-purple-700">
+                ${featured.easyTitle}
+              </h2>
+              <p class="text-sm text-gray-500">${formatDate(featured.publishedAt)} · ${featured.source}</p>
+            </div>
+          </div>
+        </button>
+      ` : `
+        <div class="text-center py-20 text-gray-500">이 카테고리에 뉴스가 없어요</div>
+      `}
+
+      <!-- 나머지 뉴스 그리드 -->
+      <div class="grid md:grid-cols-2 gap-4">
+        ${rest.map(a => `
+          <button onclick="showDetail('${a.id}')" class="text-left bg-white border-3 border-gray-100 hover:border-purple-300 rounded-2xl p-6 group transition">
+            <div class="flex items-start gap-4">
+              <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center text-3xl flex-shrink-0">
+                ${a.emoji}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap mb-2">
+                  <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-black ${catColor(a.category).bg} ${catColor(a.category).text}">
+                    #${a.category}
+                  </span>
+                  ${a.aiGenerated ? `<span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-700">✨ AI</span>` : ""}
+                  ${a.realNews ? `<span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-green-100 text-green-700">📰 실제</span>` : ""}
+                </div>
+                <h3 class="text-lg font-black tracking-tight text-gray-900 leading-snug mb-2 group-hover:text-purple-700">
+                  ${a.easyTitle}
+                </h3>
+                <p class="text-xs text-gray-500">${formatDate(a.publishedAt)} · ${a.source}</p>
+              </div>
+            </div>
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function showDetail(id) {
+  const a = ARTICLES.find(x => x.id === id);
+  if (!a) return;
+  window.scrollTo(0, 0);
+  const paragraphs = a.easyBody.split(/\n\s*\n/).filter(Boolean);
+  const c = catColor(a.category);
+
+  app.innerHTML = `
+    <div class="animate-fadeIn max-w-3xl mx-auto">
+      <button onclick="showList()" class="inline-flex items-center gap-1 text-sm font-bold text-purple-700 hover:text-purple-900 mb-6">
+        ← 뉴스 목록으로
+      </button>
+
+      <article class="bg-white border-3 border-gray-100 rounded-3xl p-8 md:p-12">
+        <div class="flex items-center gap-3 mb-6 flex-wrap">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center text-4xl">
+            ${a.emoji}
+          </div>
+          <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-black ${c.bg} ${c.text}">
+            #${a.category}
+          </span>
+          ${a.aiGenerated ? `<span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-black bg-purple-100 text-purple-700">✨ Claude AI 변환</span>` : ""}
+          ${a.realNews ? `<span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-black bg-green-100 text-green-700">📰 실제 기사</span>` : ""}
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-black tracking-tight text-gray-900 leading-tight mb-4">
+          ${a.easyTitle}
+        </h1>
+
+        <p class="text-sm text-gray-500 mb-6 pb-6 border-b-2 border-gray-100">
+          ${formatLongDate(a.publishedAt)}
+        </p>
+
+        <button onclick="speak()" id="ttsBtn" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-black px-5 py-3 rounded-full text-sm mb-8 shadow-sm">
+          🔊 읽어 주기
+        </button>
+
+        <div class="easy-body text-gray-800" id="body">
+          ${paragraphs.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("")}
+        </div>
+
+        <div class="mt-12 p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-yellow-50 border-2 border-purple-100">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-lg">📎</span>
+            <span class="font-black text-purple-900">원문 출처</span>
+          </div>
+          <p class="text-sm text-gray-700 mb-3">${a.source}</p>
+          <a href="${a.sourceUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm font-bold text-purple-700 hover:text-purple-900 underline underline-offset-4">
+            원문 기사 보러 가기 →
+          </a>
+        </div>
+      </article>
+    </div>
+  `;
+}
+
+function speak() {
+  const text = document.getElementById("body").innerText;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ko-KR";
+  u.rate = 0.9;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+  const btn = document.getElementById("ttsBtn");
+  if (btn) {
+    btn.innerText = "⏸ 잠시 멈춤";
+    u.onend = () => { if (btn) btn.innerHTML = "🔊 읽어 주기"; };
+  }
+}
+
+showList();
+</script>
+</body>
+</html>
