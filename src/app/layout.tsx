@@ -5,9 +5,37 @@ import { CATEGORIES } from "@/lib/category";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "하티즘 뉴스 — 마음으로 읽는 쉬운 소식",
-  description: "발달장애인도 이해할 수 있는 쉬운말로 변환된 뉴스 채널",
-  robots: { index: true, follow: true }
+  metadataBase: new URL("https://heartismnews.co.kr"),
+  title: {
+    default: "하티즘 뉴스 — 마음으로 읽는 쉬운 소식",
+    template: "%s | 하티즘 뉴스"
+  },
+  description: "발달장애인도 이해할 수 있는 쉬운말로 변환된 뉴스 채널. 매일 새 기사를 쉬운 한국어로 풀어 드려요. 사회·정치·경제·문화·날씨·발달장애 정책 뉴스.",
+  keywords: ["하티즘", "하티즘뉴스", "쉬운말 뉴스", "발달장애", "발달장애인 뉴스", "쉬운 뉴스", "easy news", "쉬운 한국어", "장애인 정책", "특수교육", "사회 뉴스", "쉬운말"],
+  authors: [{ name: "Heartism News" }],
+  creator: "Heartism",
+  publisher: "Heartism News",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 }
+  },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: "하티즘 뉴스",
+    title: "하티즘 뉴스 — 마음으로 읽는 쉬운 소식",
+    description: "발달장애인도 이해할 수 있는 쉬운말로 변환된 뉴스 채널",
+    url: "https://heartismnews.co.kr"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "하티즘 뉴스 — 마음으로 읽는 쉬운 소식",
+    description: "발달장애인도 이해할 수 있는 쉬운말로 변환된 뉴스 채널"
+  },
+  alternates: {
+    canonical: "https://heartismnews.co.kr"
+  }
 };
 
 export const viewport: Viewport = {

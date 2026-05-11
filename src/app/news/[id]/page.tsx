@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
@@ -5,6 +6,31 @@ import { catStyle } from "@/lib/category";
 import { TtsButton } from "@/components/TtsButton";
 
 export const revalidate = 600;
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const article = await prisma.article.findUnique({ where: { id } });
+  if (!article) return { title: "뉴스를 찾을 수 없어요" };
+
+  const desc = (article.easyBody ?? article.originalBody).slice(0, 150).replace(/\n/g, " ");
+
+  return {
+    title: article.easyTitle ?? article.originalTitle,
+    description: desc,
+    keywords: [article.category, "쉬운말 뉴스", "하티즘", "발달장애"].filter(Boolean) as string[],
+    openGraph: {
+      title: article.easyTitle ?? article.originalTitle,
+      description: desc,
+      type: "article",
+      publishedTime: article.publishedAt.toISOString(),
+      url: `https://heartismnews.co.kr/news/${article.id}`
+    }
+  };
+}
 
 const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 function formatLongDate(d: Date) {
