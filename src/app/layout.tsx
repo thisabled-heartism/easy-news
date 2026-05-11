@@ -27,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="text-xs font-medium text-purple-600">마음으로 읽는 쉬운 소식</div>
               </div>
             </Link>
+            {/* 데스크톱 네비 (우측) */}
             <nav className="hidden md:flex items-center gap-1">
               <Link href="/" className="px-3 py-2 rounded-lg text-sm font-bold text-gray-700 hover:text-purple-700 hover:bg-purple-50">
                 전체
@@ -42,6 +43,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               ))}
             </nav>
           </div>
+          {/* 모바일 네비 (가로 스크롤) */}
+          <nav className="md:hidden flex overflow-x-auto px-4 pb-3 gap-2 scrollbar-hide">
+            <Link
+              href="/"
+              className="shrink-0 px-4 py-2 rounded-full text-sm font-bold text-gray-700 bg-gray-100 hover:bg-purple-100 hover:text-purple-700 whitespace-nowrap"
+            >
+              전체
+            </Link>
+            {CATEGORIES.map(cat => (
+              <Link
+                key={cat}
+                href={`/?category=${encodeURIComponent(cat)}`}
+                className="shrink-0 px-4 py-2 rounded-full text-sm font-bold text-gray-700 bg-gray-100 hover:bg-purple-100 hover:text-purple-700 whitespace-nowrap"
+              >
+                {cat}
+              </Link>
+            ))}
+          </nav>
         </header>
 
         <main className="max-w-5xl mx-auto px-6 py-10">{children}</main>

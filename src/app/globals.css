@@ -28,3 +28,7 @@ a:focus-visible, button:focus-visible {
   outline-offset: 2px;
   border-radius: 6px;
 }
+
+/* 모바일 가로 스크롤바 숨김 */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
