@@ -1,7 +1,6 @@
 import Parser from "rss-parser";
 import { prisma } from "./db";
 import { NEWS_SOURCES, type NewsSource } from "./sources";
-import { isWeatherArticle } from "./weather-detect";
 
 const parser = new Parser({
   timeout: 15000,
@@ -34,8 +33,6 @@ async function crawlSource(source: NewsSource) {
     const publishedAt = item.isoDate ? new Date(item.isoDate) : new Date();
 
     const cleanTitle = stripHtml(item.title);
-    // 날씨 키워드 자동 감지 → 카테고리 덮어쓰기
-    const detectedCategory = isWeatherArticle(cleanTitle, body) ? "날씨" : source.category;
 
     try {
       await prisma.article.create({
@@ -44,7 +41,7 @@ async function crawlSource(source: NewsSource) {
           sourceUrl: item.link,
           originalTitle: cleanTitle,
           originalBody: body,
-          category: detectedCategory,
+          category: source.category,
           publishedAt,
           status: "pending"
         }

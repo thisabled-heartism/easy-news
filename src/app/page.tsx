@@ -17,6 +17,21 @@ export default async function HomePage({
 }) {
   const { category } = await searchParams;
 
+  // 날씨 카테고리는 위젯만 표시 (기사 안 보여줌)
+  if (category === "날씨") {
+    return (
+      <div className="animate-fadeIn">
+        <div className="mb-10">
+          <h1 className="text-4xl font-black tracking-tight text-gray-900 leading-tight mb-2">
+            날씨
+          </h1>
+          <p className="text-base text-gray-600">서울의 오늘과 이번 주 날씨예요</p>
+        </div>
+        <WeatherWidget />
+      </div>
+    );
+  }
+
   const articles = await prisma.article.findMany({
     where: {
       status: "ready",
@@ -56,7 +71,6 @@ export default async function HomePage({
         </p>
       </div>
 
-      {category === "날씨" && <WeatherWidget />}
 
       <Link
         href={`/news/${featured.id}`}
