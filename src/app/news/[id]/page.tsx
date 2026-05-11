@@ -42,9 +42,6 @@ export default async function NewsDetail({
               #{article.category}
             </span>
           )}
-          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-black bg-purple-100 text-purple-700">
-            ✨ Claude AI 변환
-          </span>
         </div>
 
         <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 leading-tight mb-4">
