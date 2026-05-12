@@ -28,13 +28,14 @@ export default async function HomePage({
     );
   }
 
+  // 충분히 많이 가져와서 여러 날짜 커버
   const articles = await prisma.article.findMany({
     where: {
       status: "ready",
       ...(category ? { category } : {})
     },
     orderBy: { publishedAt: "desc" },
-    take: 80
+    take: 300
   });
 
   if (articles.length === 0) {
@@ -56,8 +57,15 @@ export default async function HomePage({
   const featuredStyle = catStyle(featured.category);
   const today = kstDayString(new Date());
 
-  // 나머지를 날짜별로 그룹화
+  // 나머지를 날짜별로 그룹화, 날짜당 최대 개수 제한 (오늘 49 + 메인 1 = 50, 다른 날 20)
   const groups = groupByDay(articles.slice(1));
+  const groupsWithMore: Array<{ day: string; label: string; items: typeof articles; totalCount: number }> = [];
+  groups.forEach((g, idx) => {
+    const limit = idx === 0 ? 49 : 19;
+    const totalCount = g.items.length;
+    const items = totalCount > limit ? g.items.slice(0, limit) : g.items;
+    groupsWithMore.push({ ...g, items, totalCount });
+  });
 
   return (
     <div className="animate-fadeIn">
@@ -101,14 +109,16 @@ export default async function HomePage({
       </Link>
 
       {/* 날짜별 섹션 */}
-      {groups.map((group) => {
+      {groupsWithMore.map((group) => {
         const isToday = group.day === today;
+        const hasMore = group.totalCount > group.items.length;
         return (
           <section key={group.day} className="mb-10">
             <div className="flex items-center gap-3 mb-5">
               <div className={`h-1 flex-1 rounded-full ${isToday ? "bg-purple-200" : "bg-gray-200"}`}></div>
               <h3 className={`text-base font-black tracking-tight whitespace-nowrap ${isToday ? "text-purple-700" : "text-gray-600"}`}>
                 {group.label}
+                {hasMore && <span className="ml-2 text-xs font-medium text-gray-400">({group.totalCount}개 중 {group.items.length}개)</span>}
               </h3>
               <div className={`h-1 flex-1 rounded-full ${isToday ? "bg-purple-200" : "bg-gray-200"}`}></div>
             </div>
@@ -149,7 +159,7 @@ export default async function HomePage({
       })}
 
       <div className="mt-12 text-center text-sm text-gray-400">
-        총 {articles.length}개의 뉴스를 보고 계세요
+        총 {1 + groupsWithMore.reduce((s, g) => s + g.items.length, 0)}개의 뉴스를 보고 계세요
       </div>
     </div>
   );
