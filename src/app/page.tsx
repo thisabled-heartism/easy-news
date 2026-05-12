@@ -5,9 +5,13 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 
 export const revalidate = 300;
 
-const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 function formatDate(d: Date) {
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})`;
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "long",
+    day: "numeric",
+    weekday: "short"
+  }).format(d);
 }
 
 export default async function HomePage({

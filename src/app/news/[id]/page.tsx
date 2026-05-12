@@ -32,9 +32,14 @@ export async function generateMetadata({
   };
 }
 
-const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 function formatLongDate(d: Date) {
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${DAYS[d.getDay()]}요일`;
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long"
+  }).format(d);
 }
 
 export default async function NewsDetail({
