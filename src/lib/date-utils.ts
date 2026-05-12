@@ -54,3 +54,30 @@ export function groupByDay<T extends { publishedAt: Date }>(articles: T[]): Arra
     .sort((a, b) => b.localeCompare(a)) // 최신순
     .map(day => ({ day, label: dateLabel(day), items: groups[day] }));
 }
+
+// "YYYY-MM-DD" → 그 날의 KST 자정부터 다음날 KST 자정까지의 UTC Date 범위
+export function kstDayRange(dayStr: string): { start: Date; end: Date } {
+  // KST 자정 = UTC 전날 15:00
+  const start = new Date(dayStr + "T00:00:00+09:00");
+  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+  return { start, end };
+}
+
+// "YYYY-MM-DD"에서 N일 더하거나 뺀 날짜 문자열
+export function shiftDay(dayStr: string, deltaDays: number): string {
+  const { start } = kstDayRange(dayStr);
+  const shifted = new Date(start.getTime() + deltaDays * 24 * 60 * 60 * 1000);
+  return kstDayString(shifted);
+}
+
+// 긴 날짜 표시: "2026년 5월 12일 화요일"
+export function fullDateLabel(dayStr: string): string {
+  const { start } = kstDayRange(dayStr);
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long"
+  }).format(start);
+}
