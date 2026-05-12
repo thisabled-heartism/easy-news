@@ -81,3 +81,14 @@ export function fullDateLabel(dayStr: string): string {
     weekday: "long"
   }).format(start);
 }
+
+// 중간 날짜 표시: "5월 12일 (화)" — 모바일 친화
+export function midDateLabel(dayStr: string): string {
+  const { start } = kstDayRange(dayStr);
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "long",
+    day: "numeric",
+    weekday: "short"
+  }).format(start);
+}

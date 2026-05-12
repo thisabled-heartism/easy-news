@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { catStyle } from "@/lib/category";
 import { WeatherWidget } from "@/components/WeatherWidget";
-import { kstDayString, kstDayRange, shiftDay, dateLabel, fullDateLabel, shortTime } from "@/lib/date-utils";
+import { kstDayString, kstDayRange, shiftDay, dateLabel, midDateLabel, fullDateLabel, shortTime } from "@/lib/date-utils";
 
 export const revalidate = 300;
 
@@ -44,7 +44,6 @@ export default async function HomePage({
   const nextDay = shiftDay(targetDay, +1);
   const isToday = targetDay === today;
 
-  // 해당 KST 날짜에 발행된 기사만
   const { start, end } = kstDayRange(targetDay);
   const articles = await prisma.article.findMany({
     where: {
@@ -58,63 +57,54 @@ export default async function HomePage({
   const featured = articles[0];
   const rest = articles.slice(1);
 
-  // 네비게이션 컴포넌트
-  const Navigation = ({ className = "" }: { className?: string }) => (
-    <div className={`flex items-center justify-between gap-3 ${className}`}>
-      <Link
-        href={buildHref({ category, date: prevDay })}
-        className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white border-3 border-gray-100 hover:border-purple-300 text-gray-700 font-bold no-underline transition group flex-1 max-w-[200px]"
-      >
-        <span className="text-2xl group-hover:text-purple-700">←</span>
-        <div className="leading-tight text-left">
-          <div className="text-xs text-gray-500">이전 날짜</div>
-          <div className="text-sm font-black group-hover:text-purple-700">{dateLabel(prevDay)}</div>
-        </div>
-      </Link>
-
-      <div className="text-center px-2">
-        <div className="text-xs text-gray-500">{isToday ? "📅 오늘" : "📅"}</div>
-        <div className="text-base md:text-lg font-black tracking-tight text-gray-900 whitespace-nowrap">
-          {fullDateLabel(targetDay)}
-        </div>
-      </div>
-
-      {isToday ? (
-        <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-gray-50 text-gray-300 font-bold flex-1 max-w-[200px] justify-end cursor-not-allowed">
-          <div className="leading-tight text-right">
-            <div className="text-xs">다음 날짜</div>
-            <div className="text-sm font-black">아직 없어요</div>
-          </div>
-          <span className="text-2xl">→</span>
-        </div>
-      ) : (
-        <Link
-          href={buildHref({ category, date: nextDay === today ? undefined : nextDay })}
-          className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white border-3 border-gray-100 hover:border-purple-300 text-gray-700 font-bold no-underline transition group flex-1 max-w-[200px] justify-end"
-        >
-          <div className="leading-tight text-right">
-            <div className="text-xs text-gray-500">다음 날짜</div>
-            <div className="text-sm font-black group-hover:text-purple-700">{dateLabel(nextDay)}</div>
-          </div>
-          <span className="text-2xl group-hover:text-purple-700">→</span>
-        </Link>
-      )}
-    </div>
-  );
-
   return (
     <div className="animate-fadeIn">
-      <div className="mb-8">
-        <h1 className="text-4xl font-black tracking-tight text-gray-900 leading-tight mb-2">
+      <div className="mb-6">
+        <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 leading-tight mb-1">
           {category ? `${category} 뉴스` : "쉬운 뉴스"}
         </h1>
-        <p className="text-base text-gray-600">
-          {category ? `'${category}' 카테고리예요` : "어려운 뉴스를 쉬운말로 풀어 드려요"}
+        <p className="text-sm md:text-base text-gray-600">
+          {category ? `'${category}' 카테고리` : "어려운 뉴스를 쉬운말로 풀어 드려요"}
         </p>
       </div>
 
-      {/* 상단 날짜 네비 */}
-      <Navigation className="mb-10" />
+      {/* 날짜 네비 (한 줄, 모바일 친화) */}
+      <div className="flex items-center justify-between gap-2 mb-8">
+        <Link
+          href={buildHref({ category, date: prevDay })}
+          className="shrink-0 inline-flex items-center gap-1.5 px-3 md:px-4 py-2.5 rounded-xl bg-white border-2 border-gray-100 hover:border-purple-300 active:border-purple-400 transition font-bold whitespace-nowrap no-underline text-gray-700 hover:text-purple-700"
+          aria-label={`이전 날짜 ${dateLabel(prevDay)}로 이동`}
+        >
+          <span className="text-lg">←</span>
+          <span className="text-xs md:text-sm">{dateLabel(prevDay)}</span>
+        </Link>
+
+        <div className="text-center flex-1 min-w-0 px-1">
+          <div className="text-[10px] md:text-xs text-purple-600 font-bold mb-0.5 whitespace-nowrap">
+            {isToday ? "📅 오늘" : "📅"}
+          </div>
+          <div className="text-sm md:text-base font-black tracking-tight text-gray-900 whitespace-nowrap">
+            <span className="md:hidden">{midDateLabel(targetDay)}</span>
+            <span className="hidden md:inline">{fullDateLabel(targetDay)}</span>
+          </div>
+        </div>
+
+        {isToday ? (
+          <div className="shrink-0 inline-flex items-center gap-1.5 px-3 md:px-4 py-2.5 rounded-xl bg-gray-50 text-gray-300 font-bold whitespace-nowrap cursor-not-allowed">
+            <span className="text-xs md:text-sm">최신</span>
+            <span className="text-lg">→</span>
+          </div>
+        ) : (
+          <Link
+            href={buildHref({ category, date: nextDay === today ? undefined : nextDay })}
+            className="shrink-0 inline-flex items-center gap-1.5 px-3 md:px-4 py-2.5 rounded-xl bg-white border-2 border-gray-100 hover:border-purple-300 active:border-purple-400 transition font-bold whitespace-nowrap no-underline text-gray-700 hover:text-purple-700"
+            aria-label={`다음 날짜 ${dateLabel(nextDay)}로 이동`}
+          >
+            <span className="text-xs md:text-sm">{dateLabel(nextDay)}</span>
+            <span className="text-lg">→</span>
+          </Link>
+        )}
+      </div>
 
       {!featured ? (
         <div className="text-center py-16 animate-fadeIn">
@@ -126,10 +116,10 @@ export default async function HomePage({
           {/* 메인 카드 */}
           <Link
             href={`/news/${featured.id}`}
-            className="block w-full text-left mb-8 bg-white border-3 border-gray-100 hover:border-purple-300 rounded-3xl p-8 group transition no-underline"
+            className="block w-full text-left mb-8 bg-white border-3 border-gray-100 hover:border-purple-300 rounded-3xl p-6 md:p-8 group transition no-underline"
           >
-            <div className="flex items-start gap-6">
-              <div className={`w-24 h-24 rounded-2xl bg-gradient-to-br ${catStyle(featured.category).gradFrom} ${catStyle(featured.category).gradTo} flex items-center justify-center text-5xl flex-shrink-0`}>
+            <div className="flex items-start gap-4 md:gap-6">
+              <div className={`w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-gradient-to-br ${catStyle(featured.category).gradFrom} ${catStyle(featured.category).gradTo} flex items-center justify-center text-3xl md:text-5xl flex-shrink-0`}>
                 {catStyle(featured.category).emoji}
               </div>
               <div className="flex-1 min-w-0">
@@ -143,7 +133,7 @@ export default async function HomePage({
                     ⭐ 주요 뉴스
                   </span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900 leading-snug mb-3 group-hover:text-purple-700">
+                <h2 className="text-xl md:text-3xl font-black tracking-tight text-gray-900 leading-snug mb-3 group-hover:text-purple-700">
                   {featured.easyTitle ?? featured.originalTitle}
                 </h2>
                 <p className="text-sm text-gray-500">
@@ -154,14 +144,14 @@ export default async function HomePage({
           </Link>
 
           {/* 나머지 그리드 */}
-          <div className="grid md:grid-cols-2 gap-4 mb-12">
+          <div className="grid md:grid-cols-2 gap-4 mb-8">
             {rest.map((a) => {
               const style = catStyle(a.category);
               return (
                 <Link
                   key={a.id}
                   href={`/news/${a.id}`}
-                  className="text-left bg-white border-3 border-gray-100 hover:border-purple-300 rounded-2xl p-6 group transition no-underline"
+                  className="text-left bg-white border-3 border-gray-100 hover:border-purple-300 rounded-2xl p-5 md:p-6 group transition no-underline"
                 >
                   <div className="flex items-start gap-4">
                     <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${style.gradFrom} ${style.gradTo} flex items-center justify-center text-3xl flex-shrink-0`}>
@@ -186,14 +176,11 @@ export default async function HomePage({
             })}
           </div>
 
-          <div className="text-center text-sm text-gray-400 mb-8">
-            {fullDateLabel(targetDay)}에 {articles.length}개의 뉴스
+          <div className="text-center text-sm text-gray-400">
+            이 날 {articles.length}개의 뉴스
           </div>
         </>
       )}
-
-      {/* 하단 날짜 네비 (다시 한 번) */}
-      <Navigation />
     </div>
   );
 }
