@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   }
 
   const crawled = await crawlAll();
-  const simplified = await simplifyPending(30);
+  const simplified = await simplifyPending(50);
 
   return NextResponse.json({ crawled, simplified, ranAt: new Date().toISOString() });
 }
