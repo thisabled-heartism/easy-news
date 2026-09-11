@@ -1,4 +1,4 @@
-// 발달장애 관련 기사 감지 (정확도 우선: 제목만 검사)
+// 발달장애 관련 기사 감지 (제목+본문 검사)
 
 const DISABILITY_PATTERNS: RegExp[] = [
   // 발달장애 직접 명시
@@ -31,9 +31,19 @@ const DISABILITY_PATTERNS: RegExp[] = [
   /장애\s?학생/, /장애\s?아동/, /장애아/,
 
   // 발달장애 관련 사람들
-  /발달장애인/, /발달\s?장애인/
+  /발달장애인/, /발달\s?장애인/,
+
+  // 디스에이블드/하티즘 브랜드 및 관련 인물/키워드
+  /디스에이블드/, /Thisabled/i, /thisabled/,
+  /하티즘/, /Heartism/i,
+  /정일우/,
+  /장애\s?예술/, /장애인\s?예술/, /장애\s?작가/, /장애인\s?작가/,
+  /배리어\s?프리/, /배리어프리/, /barrier[\s-]?free/i,
+  /무장애/
 ];
 
-export function isDisabilityArticle(title: string): boolean {
-  return DISABILITY_PATTERNS.some(re => re.test(title));
+export function isDisabilityArticle(title: string, body?: string): boolean {
+  if (DISABILITY_PATTERNS.some(re => re.test(title))) return true;
+  if (body && DISABILITY_PATTERNS.some(re => re.test(body))) return true;
+  return false;
 }

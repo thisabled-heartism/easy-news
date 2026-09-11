@@ -34,8 +34,8 @@ async function crawlSource(source: NewsSource) {
     const publishedAt = item.isoDate ? new Date(item.isoDate) : new Date();
 
     const cleanTitle = stripHtml(item.title);
-    // 발달장애 관련 기사면 카테고리 덮어쓰기 (우선)
-    const finalCategory = isDisabilityArticle(cleanTitle) ? "발달장애" : source.category;
+    // 발달장애 관련 기사면 카테고리 덮어쓰기 (우선) - 제목+본문 검사
+    const finalCategory = isDisabilityArticle(cleanTitle, body) ? "발달장애" : source.category;
 
     try {
       await prisma.article.create({

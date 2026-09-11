@@ -22,5 +22,9 @@ export const NEWS_SOURCES: NewsSource[] = [
   { name: "한겨레 - 문화", rss: "https://www.hani.co.kr/rss/culture/", category: "문화" },
 
   // 종합
-  { name: "경향신문", rss: "https://www.khan.co.kr/rss/rssdata/total_news.xml", category: "종합" }
+  { name: "경향신문", rss: "https://www.khan.co.kr/rss/rssdata/total_news.xml", category: "종합" },
+
+  // 발달장애 전문
+  { name: "에이블뉴스", rss: "https://www.ablenews.co.kr/rss/allArticle.xml", category: "발달장애" },
+  { name: "웰페어뉴스", rss: "https://www.welfarenews.net/rss/allArticle.xml", category: "발달장애" }
 ];
