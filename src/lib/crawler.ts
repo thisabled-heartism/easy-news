@@ -31,7 +31,11 @@ async function crawlSource(source: NewsSource) {
     const body = stripHtml(item.contentSnippet || item.content || item.summary || "");
     if (!body) continue;
 
-    const publishedAt = item.isoDate ? new Date(item.isoDate) : new Date();
+    // 에이블뉴스·웰페어뉴스처럼 시간대 없이 "2026-11-26 12:04:09"(한국시간)로 주는 RSS는 KST로 해석
+    const rawDate = (item.pubDate || "").trim();
+    const publishedAt = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(rawDate)
+      ? new Date(rawDate.replace(" ", "T") + "+09:00")
+      : item.isoDate ? new Date(item.isoDate) : new Date();
 
     const cleanTitle = stripHtml(item.title);
     // 발달장애 관련 기사면 카테고리 덮어쓰기 (우선) - 제목+본문 검사
