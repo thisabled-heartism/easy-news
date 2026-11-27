@@ -1,6 +1,6 @@
 // 발달장애 관련 기사 감지 (제목+본문 검사)
 
-const DISABILITY_PATTERNS: RegExp[] = [
+export const DISABILITY_PATTERNS: RegExp[] = [
   // 발달장애 직접 명시
   /발달\s?장애/, /발달지연/,
   /자폐/, /자폐성/, /자폐스펙트럼/, /ASD/,

@@ -24,7 +24,7 @@ export const NEWS_SOURCES: NewsSource[] = [
   // 종합
   { name: "경향신문", rss: "https://www.khan.co.kr/rss/rssdata/total_news.xml", category: "종합" },
 
-  // 발달장애 전문
-  { name: "에이블뉴스", rss: "https://www.ablenews.co.kr/rss/allArticle.xml", category: "발달장애" },
-  { name: "웰페어뉴스", rss: "https://www.welfarenews.net/rss/allArticle.xml", category: "발달장애" }
+  // 장애·복지 전문 매체: 기본은 "사회", 발달장애 관련 내용이면 크롤러가 "발달장애"로 바꿈
+  { name: "에이블뉴스", rss: "https://www.ablenews.co.kr/rss/allArticle.xml", category: "사회" },
+  { name: "웰페어뉴스", rss: "https://www.welfarenews.net/rss/allArticle.xml", category: "사회" }
 ];
